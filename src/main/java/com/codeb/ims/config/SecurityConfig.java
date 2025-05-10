@@ -25,9 +25,14 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authenticationProvider(authenticationProvider())
             .authorizeHttpRequests(auth -> auth
-            	.requestMatchers("/api/register", "/api/login", "/api/forgot-password", "/api/reset-password/**").permitAll()
-                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")   // ✅ FIXED
-                .requestMatchers("/sales/**").hasAuthority("ROLE_SALES")   // ✅ FIXED
+                .requestMatchers(
+                    "/api/register",
+                    "/api/login",
+                    "/api/forgot-password",
+                    "/api/reset-password/**"
+                ).permitAll()
+                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+                .requestMatchers("/sales/**").hasAuthority("ROLE_SALES")
                 .anyRequest().authenticated()
             )
             .anonymous(Customizer.withDefaults())
