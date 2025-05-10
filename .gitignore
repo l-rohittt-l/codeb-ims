@@ -31,9 +31,6 @@ build/
 ### VS Code ###
 .vscode/
 
-# === Spring Boot Configs ===
-src/main/resources/application.properties
-src/main/resources/application.yml
 
 # === Dotenv or custom env files ===
 .env

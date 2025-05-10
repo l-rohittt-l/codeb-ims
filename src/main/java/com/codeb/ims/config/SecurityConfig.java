@@ -23,6 +23,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
+            .authenticationProvider(authenticationProvider())
             .authorizeHttpRequests(auth -> auth
             	.requestMatchers("/api/register", "/api/login", "/api/forgot-password", "/api/reset-password/**").permitAll()
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")   // ✅ FIXED
@@ -40,8 +41,6 @@ public class SecurityConfig {
                 .deleteCookies("JSESSIONID")
             )
             .httpBasic(Customizer.withDefaults());
-
-        http.authenticationProvider(authenticationProvider());
 
         return http.build();
     }
