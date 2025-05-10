@@ -26,6 +26,8 @@ public class SecurityConfig {
             .authenticationProvider(authenticationProvider())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
+                	"/",  // 👈 allow root path access
+                    "/index.html",
                     "/api/register",
                     "/api/login",
                     "/api/forgot-password",
