@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .requestMatchers("/sales/**").hasAuthority("ROLE_SALES")   // ✅ FIXED
                 .anyRequest().authenticated()
             )
+            .anonymous(Customizer.withDefaults())
             .sessionManagement(session -> session
                 .maximumSessions(1)
                 .maxSessionsPreventsLogin(false)
