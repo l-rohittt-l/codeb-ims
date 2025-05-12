@@ -78,11 +78,9 @@ public class UserController {
             return ResponseEntity.badRequest().body("Email not found");
         }
 
-        String resetUrl = "http://localhost:8080/api/reset-password/" + token;
-        emailService.sendResetEmail(dto.getEmail(), resetUrl);
-
         return ResponseEntity.ok("Reset link has been sent to your email.");
     }
+
     
     @PatchMapping("/reset-password/{token}")
     public ResponseEntity<?> resetPassword(@PathVariable String token, @Valid @RequestBody ResetPasswordDto dto) {
