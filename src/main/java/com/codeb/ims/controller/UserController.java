@@ -7,7 +7,12 @@ import com.codeb.ims.model.User;
 import com.codeb.ims.service.EmailService;
 import com.codeb.ims.service.UserService;
 import jakarta.validation.Valid;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.codeb.ims.dto.ForgotPasswordDto;
@@ -38,18 +43,22 @@ public class UserController {
     }
     
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequestDto loginDto) {
-        User user = userService.login(loginDto.getEmail(), loginDto.getPassword());
-        
+    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequest) {
+        User user = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
 
         if (user != null) {
-            return ResponseEntity.ok("Login successful. Welcome, " + user.getFull_name() + "! Role: " + user.getRole());
+            Map<String, String> response = new HashMap<>();
+            response.put("email", user.getEmail());
+            response.put("role", user.getRole());  // ✅ THIS IS CRUCIAL
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(401).body("Invalid email or password");
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid email or password");
         }
-        
-        
     }
+
+
     
     @GetMapping("/admin/dashboard")
     public ResponseEntity<String> adminDashboard() {
