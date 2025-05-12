@@ -19,37 +19,47 @@ public class SecurityConfig {
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        http
+//            .csrf(csrf -> csrf.disable())
+//            .authenticationProvider(authenticationProvider())
+//            .authorizeHttpRequests(auth -> auth
+//                .requestMatchers(
+//                	"/",  // 👈 allow root path access
+//                    "/index.html",
+//                    "/api/register",
+//                    "/api/login",
+//                    "/api/forgot-password",
+//                    "/api/reset-password/**"
+//                ).permitAll()
+//                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+//                .requestMatchers("/sales/**").hasAuthority("ROLE_SALES")
+//                .anyRequest().authenticated()
+//            )
+//            .anonymous(Customizer.withDefaults())
+//            .sessionManagement(session -> session
+//                .maximumSessions(1)
+//                .maxSessionsPreventsLogin(false)
+//            )
+//            .logout(logout -> logout
+//                .logoutUrl("/logout")
+//                .logoutSuccessUrl("/api/login")
+//                .invalidateHttpSession(true)
+//                .deleteCookies("JSESSIONID")
+//            )
+//            .httpBasic(Customizer.withDefaults());
+//
+//        return http.build();
+//    }
+    
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .authenticationProvider(authenticationProvider())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                	"/",  // 👈 allow root path access
-                    "/index.html",
-                    "/api/register",
-                    "/api/login",
-                    "/api/forgot-password",
-                    "/api/reset-password/**"
-                ).permitAll()
-                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
-                .requestMatchers("/sales/**").hasAuthority("ROLE_SALES")
-                .anyRequest().authenticated()
-            )
-            .anonymous(Customizer.withDefaults())
-            .sessionManagement(session -> session
-                .maximumSessions(1)
-                .maxSessionsPreventsLogin(false)
-            )
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/api/login")
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
-            )
-            .httpBasic(Customizer.withDefaults());
-
+                .anyRequest().permitAll() // Allow ALL requests without login
+            );
         return http.build();
     }
 
