@@ -17,14 +17,17 @@ import java.util.UUID;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Value("${app.base-url}")
-    private String baseUrl;
+	@Value("${app.frontend-url}")
+	private String frontendUrl;
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
     private PasswordResetTokenRepository tokenRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
@@ -79,11 +82,11 @@ public class UserServiceImpl implements UserService {
         PasswordResetToken resetToken = new PasswordResetToken(token, email, expiry);
         tokenRepository.save(resetToken);
 
-        // ✅ Build full Render-based reset URL
-        String resetLink = baseUrl + "/reset-password/" + token;
+        // ✅ Generate Render-based reset URL
+        String resetLink = frontendUrl + "/reset-password/" + token;
 
-        // ✅ TODO: Send this link via email
-        System.out.println("Reset Link to be sent: " + resetLink);
+        // ✅ Send email
+        emailService.sendResetEmail(email, resetLink);
 
         return token;
     }
