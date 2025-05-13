@@ -1,5 +1,6 @@
 package com.codeb.ims.service;
 
+import com.codeb.ims.dto.UpdateProfileDto;
 import com.codeb.ims.dto.UserProfileDto;
 import com.codeb.ims.dto.UserRegistrationDto;
 import com.codeb.ims.model.User;
