@@ -33,8 +33,7 @@ public class SecurityConfig {
             .authenticationProvider(authenticationProvider())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                    "/",  // allow root path access
-                    "/index.html",
+                    "/", "/index.html",
                     "/api/register",
                     "/api/login",
                     "/api/forgot-password",
@@ -42,6 +41,7 @@ public class SecurityConfig {
                 ).permitAll()
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                 .requestMatchers("/sales/**").hasAuthority("ROLE_SALES")
+                .requestMatchers("/api/profile").authenticated() // ✅ allow all logged-in users
                 .anyRequest().authenticated()
             )
             .anonymous(Customizer.withDefaults())
@@ -52,15 +52,15 @@ public class SecurityConfig {
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessHandler((request, response, authentication) -> {
-                    response.setStatus(HttpServletResponse.SC_OK); // ✅ prevent redirect to /api/login
+                    response.setStatus(HttpServletResponse.SC_OK); // prevent redirect
                 })
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
-            );
-            // ❌ Removed .httpBasic(Customizer.withDefaults());
-
+            ); // ❌ remove this semicolon (move to end)
+            
         return http.build();
     }
+
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
