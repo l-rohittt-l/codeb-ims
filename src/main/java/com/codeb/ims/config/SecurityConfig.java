@@ -56,8 +56,8 @@ public class SecurityConfig {
                 })
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
-            )
-            .httpBasic(Customizer.withDefaults());
+            );
+            // ❌ Removed .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
