@@ -1,6 +1,7 @@
 package com.codeb.ims.config;
 
 import com.codeb.ims.security.CustomUserDetailsService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,7 +51,9 @@ public class SecurityConfig {
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/api/login")
+                .logoutSuccessHandler((request, response, authentication) -> {
+                    response.setStatus(HttpServletResponse.SC_OK); // ✅ prevent redirect to /api/login
+                })
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
             )
@@ -64,7 +67,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
             "http://localhost:5173",                  // Local development frontend
-            "https://entrynest.netlify.app"    // Replace with actual deployed React domain
+            "https://entrynest.netlify.app"           // ✅ Your deployed frontend
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
