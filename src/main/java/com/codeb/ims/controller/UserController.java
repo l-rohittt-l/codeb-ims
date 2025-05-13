@@ -1,5 +1,10 @@
 package com.codeb.ims.controller;
 
+import java.security.Principal;
+import com.codeb.ims.dto.UserProfileDto;
+import com.codeb.ims.dto.UpdateProfileDto;
+
+
 import com.codeb.ims.dto.LoginRequestDto;
 import com.codeb.ims.dto.ResetPasswordDto;
 import com.codeb.ims.dto.UserRegistrationDto;
@@ -16,6 +21,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.codeb.ims.dto.ForgotPasswordDto;
+
+
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "*") // Allow frontend requests
@@ -92,6 +99,32 @@ public class UserController {
 
         return ResponseEntity.ok("Password reset successfully. You can now log in with your new password.");
     }
+    
+    @GetMapping("/profile")
+    public ResponseEntity<?> getProfile(Principal principal) {
+        String email = principal.getName(); // Spring Security pulls it from session
+
+        UserProfileDto profile = userService.getUserProfile(email);
+        if (profile == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+
+        return ResponseEntity.ok(profile);
+    }
+    
+    @PutMapping("/profile")
+    public ResponseEntity<?> updateProfile(Principal principal, @Valid @RequestBody UpdateProfileDto dto) {
+        String email = principal.getName();
+        boolean updated = userService.updateUserProfile(email, dto);
+
+        if (updated) {
+            return ResponseEntity.ok("Profile updated successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+    }
+
+
 
 
 }

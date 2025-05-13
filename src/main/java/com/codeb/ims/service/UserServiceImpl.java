@@ -1,5 +1,6 @@
 package com.codeb.ims.service;
 
+import com.codeb.ims.dto.UserProfileDto;
 import com.codeb.ims.dto.UserRegistrationDto;
 import com.codeb.ims.model.User;
 import com.codeb.ims.model.PasswordResetToken;
@@ -118,4 +119,36 @@ public class UserServiceImpl implements UserService {
 
         return true;
     }
+    
+    @Override
+    public UserProfileDto getUserProfile(String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isEmpty()) return null;
+
+        User user = optionalUser.get();
+        return new UserProfileDto(
+            user.getFull_name(),
+            user.getEmail(),
+            user.getRole(),
+            user.getStatus()
+        );
+    }
+
+    @Override
+    public boolean updateUserProfile(String email, UpdateProfileDto dto) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isEmpty()) return false;
+
+        User user = optionalUser.get();
+
+        user.setFull_name(dto.getFull_name());
+
+        if (dto.getNewPassword() != null && !dto.getNewPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        }
+
+        userRepository.save(user);
+        return true;
+    }
+
 }
