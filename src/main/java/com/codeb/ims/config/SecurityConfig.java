@@ -66,7 +66,7 @@ public class SecurityConfig {
             "http://localhost:5173",                  // Local development frontend
             "https://entrynest.netlify.app"    // Replace with actual deployed React domain
         ));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
