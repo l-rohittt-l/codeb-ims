@@ -28,6 +28,7 @@ import com.codeb.ims.dto.ForgotPasswordDto;
 @CrossOrigin(origins = "*") // Allow frontend requests
 public class UserController {
 
+	
     private final UserService userService;
     
     @Autowired
@@ -102,6 +103,8 @@ public class UserController {
     
     @GetMapping("/profile")
     public ResponseEntity<?> getProfile(Principal principal) {
+    	System.out.println("Logged in as: " + principal.getName());
+
         String email = principal.getName(); // Spring Security pulls it from session
 
         UserProfileDto profile = userService.getUserProfile(email);
