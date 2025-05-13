@@ -2,8 +2,10 @@ package com.codeb.ims.model;
 
 import jakarta.persistence.*;
 
+
+
 @Entity
-@Table(name = "groups", uniqueConstraints = {
+@Table(name = "customer_groups", uniqueConstraints = {
     @UniqueConstraint(columnNames = "groupName")
 })
 public class Group {
