@@ -1,6 +1,7 @@
 package com.codeb.ims.config;
 
 import com.codeb.ims.security.CustomUserDetailsService;
+import com.codeb.ims.security.JwtAuthenticationFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -24,6 +26,9 @@ public class SecurityConfig {
 
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
+
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -37,11 +42,12 @@ public class SecurityConfig {
                     "/api/register",
                     "/api/login",
                     "/api/forgot-password",
-                    "/api/reset-password/**"
+                    "/api/reset-password/**",
+                    "/api/test-jwt/**"
                 ).permitAll()
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                 .requestMatchers("/sales/**").hasAuthority("ROLE_SALES")
-                .requestMatchers("/api/profile").authenticated() // ✅ allow all logged-in users
+                .requestMatchers("/api/profile").authenticated()
                 .anyRequest().authenticated()
             )
             .anonymous(Customizer.withDefaults())
@@ -52,22 +58,24 @@ public class SecurityConfig {
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessHandler((request, response, authentication) -> {
-                    response.setStatus(HttpServletResponse.SC_OK); // prevent redirect
+                    response.setStatus(HttpServletResponse.SC_OK);
                 })
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
-            ); // ❌ remove this semicolon (move to end)
-            
+            );
+
+        // ✅ Register JWT filter before UsernamePasswordAuthenticationFilter
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
-
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
-            "http://localhost:5173",                  // Local development frontend
-            "https://entrynest.netlify.app"           // ✅ Your deployed frontend
+            "http://localhost:5173",
+            "https://entrynest.netlify.app"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));

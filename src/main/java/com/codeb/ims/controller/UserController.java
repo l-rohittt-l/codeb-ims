@@ -6,9 +6,11 @@ import com.codeb.ims.dto.UpdateProfileDto;
 
 
 import com.codeb.ims.dto.LoginRequestDto;
+import com.codeb.ims.dto.LoginResponseDto;
 import com.codeb.ims.dto.ResetPasswordDto;
 import com.codeb.ims.dto.UserRegistrationDto;
 import com.codeb.ims.model.User;
+import com.codeb.ims.security.JwtUtil;
 import com.codeb.ims.service.EmailService;
 import com.codeb.ims.service.UserService;
 import jakarta.validation.Valid;
@@ -33,6 +35,9 @@ public class UserController {
     
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private JwtUtil jwtUtil;
+
     
     @Autowired
     public UserController(UserService userService) {
@@ -51,20 +56,19 @@ public class UserController {
     }
     
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequest) {
-        User user = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
+    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginDto) {
+        User user = userService.login(loginDto.getEmail(), loginDto.getPassword());
 
-        if (user != null) {
-            Map<String, String> response = new HashMap<>();
-            response.put("email", user.getEmail());
-            response.put("role", user.getRole());  // ✅ THIS IS CRUCIAL
-            return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid email or password");
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
+
+        String token = jwtUtil.generateToken(user.getEmail());
+        String role = user.getRole().replace("ROLE_", "");
+
+        return ResponseEntity.ok(new LoginResponseDto(token, role));
     }
+
 
 
     
