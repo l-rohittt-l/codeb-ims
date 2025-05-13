@@ -82,7 +82,7 @@ public class UserController {
     }
 
     
-    @PatchMapping("/reset-password/{token}")
+    @PostMapping("/reset-password/{token}")
     public ResponseEntity<?> resetPassword(@PathVariable String token, @Valid @RequestBody ResetPasswordDto dto) {
         boolean result = userService.resetPassword(token, dto.getNewPassword());
 
@@ -92,5 +92,6 @@ public class UserController {
 
         return ResponseEntity.ok("Password reset successfully. You can now log in with your new password.");
     }
+
 
 }
