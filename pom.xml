@@ -36,6 +36,13 @@
    <!-- Match your project's Jackson version if needed -->
 </dependency>
 
+<dependency>
+  <groupId>jakarta.persistence</groupId>
+  <artifactId>jakarta.persistence-api</artifactId>
+  <version>2.2.3</version>
+</dependency>
+
+
 		<!-- JWT library -->
 <dependency>
   <groupId>io.jsonwebtoken</groupId>
