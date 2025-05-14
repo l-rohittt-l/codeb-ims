@@ -7,6 +7,8 @@ import com.codeb.ims.repository.ChainRepository;
 import com.codeb.ims.repository.GroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -44,15 +46,17 @@ public class ChainService {
     }
 
     // ✅ Get all active chains
+    @Transactional
     public List<Chain> getAllActiveChains() {
         List<Chain> chains = chainRepository.findAllByIsActiveTrue();
         chains.forEach(chain -> {
             if (chain.getGroup() != null) {
-                chain.getGroup().getGroupName(); // force initialize
+                chain.getGroup().getGroupName(); // force load while session is open
             }
         });
         return chains;
     }
+
 
 
     // ✅ Get chain by ID
