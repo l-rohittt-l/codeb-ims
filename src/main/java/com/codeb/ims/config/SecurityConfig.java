@@ -45,6 +45,7 @@ public class SecurityConfig {
                     "/api/reset-password/**",
                     "/api/test-jwt/**"
                 ).permitAll()
+                .requestMatchers("/api/groups/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SALES")
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                 .requestMatchers("/sales/**").hasAuthority("ROLE_SALES")
                 .requestMatchers("/api/profile").authenticated()
