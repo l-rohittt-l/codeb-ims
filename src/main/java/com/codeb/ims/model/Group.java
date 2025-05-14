@@ -3,6 +3,8 @@ package com.codeb.ims.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 @Entity
 @Table(name = "customer_groups", uniqueConstraints = {
@@ -31,6 +33,7 @@ public class Group {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Chain> chains;
 
