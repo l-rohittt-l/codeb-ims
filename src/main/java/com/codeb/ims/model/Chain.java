@@ -1,7 +1,7 @@
 package com.codeb.ims.model;
 
 import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 @Entity
@@ -21,7 +21,7 @@ public class Chain {
     @Column(name = "is_active", nullable = false)
     private boolean isActive = true;
 
-    @JsonIgnore
+    @JsonIgnoreProperties({"chains", "createdAt", "updatedAt"})
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", nullable = false)
     private Group group;
