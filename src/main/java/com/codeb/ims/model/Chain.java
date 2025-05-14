@@ -4,23 +4,23 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "customer_chains", uniqueConstraints = {
-    @UniqueConstraint(columnNames = "chainName")
+    @UniqueConstraint(columnNames = "chain_name")
 })
 public class Chain {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "chain_id")
+    private Long chainId;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "chain_name", nullable = false, unique = true)
     private String chainName;
 
-    @Column(nullable = false)
+    @Column(name = "is_active", nullable = false)
     private boolean isActive = true;
 
-    // 🔗 Many chains belong to one group
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id", nullable = false)
+    @JoinColumn(name = "group_id", nullable = false)
     private Group group;
 
     public Chain() {}
@@ -33,12 +33,12 @@ public class Chain {
 
     // Getters and Setters
 
-    public Long getId() {
-        return id;
+    public Long getChainId() {
+        return chainId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setChainId(Long chainId) {
+        this.chainId = chainId;
     }
 
     public String getChainName() {

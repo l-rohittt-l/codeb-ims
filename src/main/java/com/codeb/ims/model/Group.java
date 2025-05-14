@@ -13,7 +13,7 @@ public class Group {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "group_id")
     private Long groupId;
 
     @Column(name = "group_name", nullable = false, unique = true, length = 255)
@@ -31,7 +31,6 @@ public class Group {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // 🔗 One group has many chains
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Chain> chains;
 
