@@ -1,6 +1,8 @@
 package com.codeb.ims.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 @Entity
 @Table(name = "customer_chains", uniqueConstraints = {
@@ -19,6 +21,7 @@ public class Chain {
     @Column(name = "is_active", nullable = false)
     private boolean isActive = true;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", nullable = false)
     private Group group;
