@@ -45,10 +45,12 @@ public class SecurityConfig {
                     "/api/reset-password/**",
                     "/api/test-jwt/**"
                 ).permitAll()
-                .requestMatchers("/api/groups/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SALES")
+                .requestMatchers("/api/groups/all").authenticated()
+                .requestMatchers("/api/groups", "/api/groups/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SALES")
+                .requestMatchers("/api/chains", "/api/chains/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SALES")
+                .requestMatchers("/api/profile").authenticated()
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                 .requestMatchers("/sales/**").hasAuthority("ROLE_SALES")
-                .requestMatchers("/api/profile").authenticated()
                 .anyRequest().authenticated()
             )
             .anonymous(Customizer.withDefaults())
@@ -65,7 +67,7 @@ public class SecurityConfig {
                 .deleteCookies("JSESSIONID")
             );
 
-        // ✅ Register JWT filter before UsernamePasswordAuthenticationFilter
+        // ✅ Register JWT filter BEFORE default username-password filter
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

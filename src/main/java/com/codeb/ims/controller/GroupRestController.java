@@ -62,4 +62,11 @@ public class GroupRestController {
         }
         return ResponseEntity.ok("Group deleted successfully.");
     }
+    
+ // ✅ GET all groups (active + inactive) sorted
+    @GetMapping("/all")
+    public ResponseEntity<List<Group>> getAllGroupsIncludingInactive() {
+        return ResponseEntity.ok(groupService.getAllGroupsSorted());
+    }
+
 }

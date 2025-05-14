@@ -15,4 +15,7 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     boolean existsByGroupCodeIgnoreCase(String groupCode);
 
     List<Group> findAllByIsActiveTrue();
+    List<Group> findAllByOrderByIsActiveDesc();
+
+
 }

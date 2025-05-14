@@ -84,4 +84,10 @@ public class GroupService {
         }
         return "Group not found.";
     }
+    
+    public List<Group> getAllGroupsSorted() {
+        return groupRepository.findAllByOrderByIsActiveDesc();
+    }
+
+
 }
