@@ -20,7 +20,7 @@ public class Chain {
 
     // 🔗 Many chains belong to one group
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id", nullable = false)
+    @JoinColumn(name = "id", nullable = false)
     private Group group;
 
     public Chain() {}
