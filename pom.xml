@@ -32,7 +32,7 @@
 	<dependencies>
 	<dependency>
   <groupId>com.fasterxml.jackson.datatype</groupId>
-  <artifactId>jackson-datatype-hibernate5</artifactId>
+  <artifactId>jackson-datatype-hibernate6</artifactId>
    <!-- Match your project's Jackson version if needed -->
 </dependency>
 
