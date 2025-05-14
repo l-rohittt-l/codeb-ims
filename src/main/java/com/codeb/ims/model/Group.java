@@ -2,6 +2,7 @@ package com.codeb.ims.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "customer_groups", uniqueConstraints = {
@@ -12,9 +13,8 @@ public class Group {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")  // <- Change from "group_id" to "id"
+    @Column(name = "id")
     private Long groupId;
-
 
     @Column(name = "group_name", nullable = false, unique = true, length = 255)
     private String groupName;
@@ -30,6 +30,10 @@ public class Group {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    // 🔗 One group has many chains
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Chain> chains;
 
     public Group() {}
 
@@ -90,5 +94,13 @@ public class Group {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    public List<Chain> getChains() {
+        return chains;
+    }
+
+    public void setChains(List<Chain> chains) {
+        this.chains = chains;
     }
 }

@@ -18,15 +18,21 @@ public class Chain {
     @Column(nullable = false)
     private boolean isActive = true;
 
-    // Constructors
+    // 🔗 Many chains belong to one group
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id", nullable = false)
+    private Group group;
+
     public Chain() {}
 
-    public Chain(String chainName) {
+    public Chain(String chainName, Group group) {
         this.chainName = chainName;
+        this.group = group;
         this.isActive = true;
     }
 
     // Getters and Setters
+
     public Long getId() {
         return id;
     }
@@ -49,5 +55,13 @@ public class Chain {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 }
