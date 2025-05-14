@@ -100,4 +100,21 @@ public class ChainService {
         }
         return "Chain not found.";
     }
+    
+    public String reactivateChain(Long id) {
+        Optional<Chain> optionalChain = chainRepository.findById(id);
+        if (optionalChain.isEmpty()) {
+            return "Chain not found.";
+        }
+
+        Chain chain = optionalChain.get();
+        if (chain.isActive()) {
+            return "Chain is already active.";
+        }
+
+        chain.setActive(true);
+        chainRepository.save(chain);
+        return "success";
+    }
+
 }

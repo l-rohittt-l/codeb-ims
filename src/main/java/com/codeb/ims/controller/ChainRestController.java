@@ -61,4 +61,14 @@ public class ChainRestController {
         }
         return ResponseEntity.ok("Chain deleted successfully.");
     }
+    
+    @PutMapping("/{id}/reactivate")
+    public ResponseEntity<?> reactivateChain(@PathVariable Long id) {
+        String result = chainService.reactivateChain(id);
+        if (!result.equals("success")) {
+            return ResponseEntity.badRequest().body(result);
+        }
+        return ResponseEntity.ok("Chain reactivated successfully.");
+    }
+
 }
