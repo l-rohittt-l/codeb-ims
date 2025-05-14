@@ -68,5 +68,14 @@ public class GroupRestController {
     public ResponseEntity<List<Group>> getAllGroupsIncludingInactive() {
         return ResponseEntity.ok(groupService.getAllGroupsSorted());
     }
+    
+    @PutMapping("/{id}/activate")
+    public ResponseEntity<?> reactivateGroup(@PathVariable Long id) {
+        String result = groupService.reactivateGroup(id);
+        if (!result.equals("success")) {
+            return ResponseEntity.badRequest().body(result);
+        }
+        return ResponseEntity.ok("Group reactivated successfully.");
+    }
 
 }

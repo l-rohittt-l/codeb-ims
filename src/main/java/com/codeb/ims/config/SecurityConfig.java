@@ -47,6 +47,7 @@ public class SecurityConfig {
                 ).permitAll()
                 .requestMatchers("/api/groups/all").authenticated()
                 .requestMatchers("/api/groups", "/api/groups/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SALES")
+                .requestMatchers("/api/groups/*/activate").hasAuthority("ROLE_ADMIN")
                 .requestMatchers("/api/chains", "/api/chains/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SALES")
                 .requestMatchers("/api/profile").authenticated()
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")

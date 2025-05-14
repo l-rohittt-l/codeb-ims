@@ -88,6 +88,21 @@ public class GroupService {
     public List<Group> getAllGroupsSorted() {
         return groupRepository.findAllByOrderByIsActiveDesc();
     }
+    
+    public String reactivateGroup(Long id) {
+        Optional<Group> optionalGroup = groupRepository.findById(id);
+        if (optionalGroup.isPresent()) {
+            Group group = optionalGroup.get();
 
+            if (group.isActive()) {
+                return "Group is already active.";
+            }
+
+            group.setActive(true);
+            groupRepository.save(group);
+            return "success";
+        }
+        return "Group not found.";
+    }
 
 }
