@@ -7,7 +7,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface GroupRepository extends JpaRepository<Group, Long> {
+
     Optional<Group> findByGroupNameIgnoreCase(String groupName);
-    List<Group> findAllByIsActiveTrue();
+    Optional<Group> findByGroupCodeIgnoreCase(String groupCode);
+
     boolean existsByGroupNameIgnoreCase(String groupName);
+    boolean existsByGroupCodeIgnoreCase(String groupCode);
+
+    List<Group> findAllByIsActiveTrue();
 }
