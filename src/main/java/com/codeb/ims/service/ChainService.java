@@ -45,8 +45,15 @@ public class ChainService {
 
     // ✅ Get all active chains
     public List<Chain> getAllActiveChains() {
-        return chainRepository.findAllByIsActiveTrue();
+        List<Chain> chains = chainRepository.findAllByIsActiveTrue();
+        chains.forEach(chain -> {
+            if (chain.getGroup() != null) {
+                chain.getGroup().getGroupName(); // force initialize
+            }
+        });
+        return chains;
     }
+
 
     // ✅ Get chain by ID
     public Optional<Chain> getChainById(Long id) {
