@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -53,22 +55,23 @@ public class GroupRestController {
         return ResponseEntity.ok("Group updated successfully.");
     }
 
-    // ✅ DELETE soft delete group
+    // ✅ DELETE soft delete group (now WITHOUT isLinked param)
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> softDeleteGroup(@PathVariable Long id, @RequestParam boolean isLinked) {
-        String result = groupService.softDeleteGroup(id, isLinked);
+    public ResponseEntity<?> softDeleteGroup(@PathVariable Long id) {
+        String result = groupService.softDeleteGroup(id);
         if (!result.equals("success")) {
             return ResponseEntity.badRequest().body(result);
         }
         return ResponseEntity.ok("Group deleted successfully.");
     }
-    
- // ✅ GET all groups (active + inactive) sorted
+
+    // ✅ GET all groups (active + inactive) sorted
     @GetMapping("/all")
     public ResponseEntity<List<Group>> getAllGroupsIncludingInactive() {
         return ResponseEntity.ok(groupService.getAllGroupsSorted());
     }
-    
+
+    // ✅ PUT activate an inactive group
     @PutMapping("/{id}/activate")
     public ResponseEntity<?> reactivateGroup(@PathVariable Long id) {
         String result = groupService.reactivateGroup(id);
@@ -78,4 +81,12 @@ public class GroupRestController {
         return ResponseEntity.ok("Group reactivated successfully.");
     }
 
+    // ✅ GET total active group count
+    @GetMapping("/total")
+    public ResponseEntity<Map<String, Long>> getTotalActiveGroups() {
+        long total = groupService.getTotalActiveGroups();
+        Map<String, Long> response = new HashMap<>();
+        response.put("total", total);
+        return ResponseEntity.ok(response);
+    }
 }

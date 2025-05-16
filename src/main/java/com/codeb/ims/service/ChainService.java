@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.util.List;
 import java.util.Optional;
 
@@ -22,13 +21,17 @@ public class ChainService {
     @Autowired
     private GroupRepository groupRepository;
 
-    // ✅ Add chain using DTO
     public String addChain(ChainDto dto) {
-        if (dto.getChainName() == null || dto.getChainName().trim().isEmpty()) {
-            return "Chain name cannot be empty.";
+        if (dto.getCompanyName() == null || dto.getCompanyName().trim().isEmpty()) {
+            return "Company name cannot be empty.";
         }
-        if (chainRepository.existsByChainNameIgnoreCase(dto.getChainName())) {
-            return "Chain already exists.";
+
+        if (chainRepository.existsByGstnIgnoreCase(dto.getGstn())) {
+            return "GSTN already exists.";
+        }
+
+        if (chainRepository.existsByCompanyNameIgnoreCase(dto.getCompanyName())) {
+            return "Company name already exists.";
         }
 
         Optional<Group> optionalGroup = groupRepository.findById(dto.getGroupId());
@@ -37,7 +40,8 @@ public class ChainService {
         }
 
         Chain chain = new Chain();
-        chain.setChainName(dto.getChainName().trim());
+        chain.setCompanyName(dto.getCompanyName().trim());
+        chain.setGstn(dto.getGstn().trim().toUpperCase());
         chain.setGroup(optionalGroup.get());
         chain.setActive(true);
 
@@ -45,37 +49,37 @@ public class ChainService {
         return "success";
     }
 
-    // ✅ Get all active chains
     @Transactional
-    public List<Chain> getAllActiveChains() {
-        List<Chain> chains = chainRepository.findAllByIsActiveTrue();
+    public List<Chain> getAllChainsSorted() {
+        List<Chain> chains = chainRepository.findAllByOrderByIsActiveDesc();
         chains.forEach(chain -> {
             if (chain.getGroup() != null) {
-                chain.getGroup().getGroupName(); // force load while session is open
+                chain.getGroup().getGroupName(); // lazy-load
             }
         });
         return chains;
     }
 
-
-
-    // ✅ Get chain by ID
     public Optional<Chain> getChainById(Long id) {
         return chainRepository.findById(id);
     }
 
-    // ✅ Update chain using DTO
     public String updateChain(Long id, ChainDto dto) {
         Optional<Chain> optionalChain = chainRepository.findById(id);
         if (optionalChain.isEmpty()) {
-            return "Chain not found.";
+            return "Company not found.";
         }
 
         Chain chain = optionalChain.get();
 
-        if (!chain.getChainName().equalsIgnoreCase(dto.getChainName()) &&
-            chainRepository.existsByChainNameIgnoreCase(dto.getChainName())) {
-            return "Chain already exists.";
+        if (!chain.getCompanyName().equalsIgnoreCase(dto.getCompanyName()) &&
+                chainRepository.existsByCompanyNameIgnoreCase(dto.getCompanyName())) {
+            return "Company name already exists.";
+        }
+
+        if (!chain.getGstn().equalsIgnoreCase(dto.getGstn()) &&
+                chainRepository.existsByGstnIgnoreCase(dto.getGstn())) {
+            return "GSTN already exists.";
         }
 
         Optional<Group> optionalGroup = groupRepository.findById(dto.getGroupId());
@@ -83,13 +87,14 @@ public class ChainService {
             return "Group not found.";
         }
 
-        chain.setChainName(dto.getChainName().trim());
+        chain.setCompanyName(dto.getCompanyName().trim());
+        chain.setGstn(dto.getGstn().trim().toUpperCase());
         chain.setGroup(optionalGroup.get());
+
         chainRepository.save(chain);
         return "success";
     }
 
-    // ✅ Soft delete chain
     public String softDeleteChain(Long id) {
         Optional<Chain> optionalChain = chainRepository.findById(id);
         if (optionalChain.isPresent()) {
@@ -98,23 +103,34 @@ public class ChainService {
             chainRepository.save(chain);
             return "success";
         }
-        return "Chain not found.";
+        return "Company not found.";
     }
-    
+
     public String reactivateChain(Long id) {
         Optional<Chain> optionalChain = chainRepository.findById(id);
         if (optionalChain.isEmpty()) {
-            return "Chain not found.";
+            return "Company not found.";
         }
 
         Chain chain = optionalChain.get();
         if (chain.isActive()) {
-            return "Chain is already active.";
+            return "Company is already active.";
         }
 
         chain.setActive(true);
         chainRepository.save(chain);
         return "success";
+    }
+
+    public long getTotalActiveChains() {
+        return chainRepository.countActiveChains();
+    }
+
+    public List<Chain> getChainsByGroupId(Long groupId) {
+        // Changed this line to use the new eager fetching method to avoid LazyInitializationException
+        List<Chain> chains = chainRepository.findChainsByGroupIdWithGroup(groupId);
+        // No need to manually lazy-load group name here because of JOIN FETCH
+        return chains;
     }
 
 }

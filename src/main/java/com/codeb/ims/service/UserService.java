@@ -1,5 +1,7 @@
 package com.codeb.ims.service;
 
+import java.util.List;
+
 import com.codeb.ims.dto.UpdateProfileDto;
 import com.codeb.ims.dto.UserProfileDto;
 import com.codeb.ims.dto.UserRegistrationDto;
@@ -17,5 +19,10 @@ public interface UserService {
     UserProfileDto getUserProfile(String email);
 
     boolean updateUserProfile(String email, UpdateProfileDto dto);
+
+    boolean promoteUserToAdmin(Long userId);
+    List<User> getSalesUsers();  // Add this to UserService interface
+    boolean changeUserRole(Long userId, String newRole);
+    List<User> getUsersByRole(String role);
 
 }

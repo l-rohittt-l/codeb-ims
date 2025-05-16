@@ -1,7 +1,9 @@
 package com.codeb.ims.service;
+
 import com.codeb.ims.dto.GroupDto;
 import com.codeb.ims.model.Group;
 import com.codeb.ims.repository.GroupRepository;
+import com.codeb.ims.repository.ChainRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,9 @@ public class GroupService {
 
     @Autowired
     private GroupRepository groupRepository;
+
+    @Autowired
+    private ChainRepository chainRepository;
 
     // ✅ Add Group using DTO
     public String addGroup(GroupDto dto) {
@@ -42,13 +47,11 @@ public class GroupService {
 
         Group group = optionalGroup.get();
 
-        // Check if name changed and is already taken
         if (!group.getGroupName().equalsIgnoreCase(dto.getGroupName()) &&
                 groupRepository.existsByGroupNameIgnoreCase(dto.getGroupName())) {
             return "Group name already exists.";
         }
 
-        // Check if code changed and is already taken
         if (!group.getGroupCode().equalsIgnoreCase(dto.getGroupCode()) &&
                 groupRepository.existsByGroupCodeIgnoreCase(dto.getGroupCode())) {
             return "Group code already exists.";
@@ -61,7 +64,6 @@ public class GroupService {
         return "success";
     }
 
-    // ✅ Other methods remain unchanged
     public List<Group> getAllActiveGroups() {
         return groupRepository.findAllByIsActiveTrue();
     }
@@ -70,25 +72,28 @@ public class GroupService {
         return groupRepository.findById(id);
     }
 
-    public String softDeleteGroup(Long id, boolean isLinkedToChain) {
-        if (isLinkedToChain) {
-            return "Group is linked to a chain and cannot be deleted.";
+    // ✅ NEW: prevent deletion if group is linked to active chains
+    public String softDeleteGroup(Long id) {
+        Optional<Group> optionalGroup = groupRepository.findById(id);
+        if (optionalGroup.isEmpty()) {
+            return "Group not found.";
         }
 
-        Optional<Group> optionalGroup = groupRepository.findById(id);
-        if (optionalGroup.isPresent()) {
-            Group group = optionalGroup.get();
-            group.setActive(false);
-            groupRepository.save(group);
-            return "success";
+        long linkedChains = chainRepository.countByGroupIdAndIsActiveTrue(id);
+        if (linkedChains > 0) {
+            return "Group is linked to active chains and cannot be deleted.";
         }
-        return "Group not found.";
+
+        Group group = optionalGroup.get();
+        group.setActive(false);
+        groupRepository.save(group);
+        return "success";
     }
-    
+
     public List<Group> getAllGroupsSorted() {
         return groupRepository.findAllByOrderByIsActiveDesc();
     }
-    
+
     public String reactivateGroup(Long id) {
         Optional<Group> optionalGroup = groupRepository.findById(id);
         if (optionalGroup.isPresent()) {
@@ -105,4 +110,7 @@ public class GroupService {
         return "Group not found.";
     }
 
+    public long getTotalActiveGroups() {
+        return groupRepository.countActiveGroups();
+    }
 }

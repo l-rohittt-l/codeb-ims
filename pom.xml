@@ -41,6 +41,10 @@
   <artifactId>jakarta.persistence-api</artifactId>
 </dependency>
 
+<dependency>
+    <groupId>org.flywaydb</groupId>
+    <artifactId>flyway-core</artifactId>
+</dependency>
 
 		<!-- JWT library -->
 <dependency>

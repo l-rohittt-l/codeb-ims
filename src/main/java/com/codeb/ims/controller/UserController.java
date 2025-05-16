@@ -16,6 +16,7 @@ import com.codeb.ims.service.UserService;
 import jakarta.validation.Valid;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,7 +132,36 @@ public class UserController {
         }
     }
 
+    @PutMapping("/admin/promote/{userId}")
+    public ResponseEntity<?> promoteUserToAdmin(@PathVariable Long userId) {
+        boolean updated = userService.promoteUserToAdmin(userId);
+        if (updated) {
+            return ResponseEntity.ok("User promoted to ADMIN successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        }
+    }
 
+    @GetMapping("/admin/sales-users")
+    public ResponseEntity<?> getSalesUsers() {
+        List<User> salesUsers = userService.getSalesUsers();
+        return ResponseEntity.ok(salesUsers);
+    }
 
+    @PutMapping("/admin/demote/{userId}")
+    public ResponseEntity<?> demoteUser(@PathVariable Long userId) {
+        boolean success = userService.changeUserRole(userId, "ROLE_SALES");
+
+        if (success) {
+            return ResponseEntity.ok("User demoted to SALES");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found or already SALES");
+        }
+    }
+    @GetMapping("/admin/admin-users")
+    public ResponseEntity<?> getAllAdmins() {
+        List<User> admins = userService.getUsersByRole("ROLE_ADMIN");
+        return ResponseEntity.ok(admins);
+    }
 
 }

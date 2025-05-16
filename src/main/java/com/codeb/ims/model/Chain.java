@@ -1,12 +1,16 @@
 package com.codeb.ims.model;
 
-import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "customer_chains", uniqueConstraints = {
-    @UniqueConstraint(columnNames = "chain_name")
+    @UniqueConstraint(columnNames = "company_name"),
+    @UniqueConstraint(columnNames = "gstn")
 })
 public class Chain {
 
@@ -15,27 +19,40 @@ public class Chain {
     @Column(name = "chain_id")
     private Long chainId;
 
-    @Column(name = "chain_name", nullable = false, unique = true)
-    private String chainName;
+    @Column(name = "company_name", nullable = false, unique = true, length = 255)
+    private String companyName;
+
+    @Column(name = "gstn", nullable = false, unique = true, length = 15)
+    private String gstn;
 
     @Column(name = "is_active", nullable = false)
     private boolean isActive = true;
 
-    @JsonIgnoreProperties({"chains", "createdAt", "updatedAt"})
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", nullable = false)
+    @JsonIgnoreProperties({"createdAt", "updatedAt", "chains"})  // ✅ Add this line
     private Group group;
 
+
+    // Constructors
     public Chain() {}
 
-    public Chain(String chainName, Group group) {
-        this.chainName = chainName;
+    public Chain(String companyName, String gstn, Group group) {
+        this.companyName = companyName;
+        this.gstn = gstn;
         this.group = group;
         this.isActive = true;
     }
 
     // Getters and Setters
-
     public Long getChainId() {
         return chainId;
     }
@@ -44,12 +61,20 @@ public class Chain {
         this.chainId = chainId;
     }
 
-    public String getChainName() {
-        return chainName;
+    public String getCompanyName() {
+        return companyName;
     }
 
-    public void setChainName(String chainName) {
-        this.chainName = chainName;
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public String getGstn() {
+        return gstn;
+    }
+
+    public void setGstn(String gstn) {
+        this.gstn = gstn;
     }
 
     public boolean isActive() {
@@ -66,5 +91,21 @@ public class Chain {
 
     public void setGroup(Group group) {
         this.group = group;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

@@ -4,6 +4,7 @@ import com.codeb.ims.security.CustomUserDetailsService;
 import com.codeb.ims.security.JwtAuthenticationFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,6 +31,9 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    @Value("${app.frontend.origin}")
+    private String frontendOrigin;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -43,15 +47,29 @@ public class SecurityConfig {
                     "/api/login",
                     "/api/forgot-password",
                     "/api/reset-password/**",
-                    "/api/test-jwt/**"
+                    "/api/test-jwt/**",
+                    "/api/groups/total",
+                    "/api/chains/total"
                 ).permitAll()
-                .requestMatchers("/api/groups/all").authenticated()
-                .requestMatchers("/api/groups", "/api/groups/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SALES")
-                .requestMatchers("/api/groups/*/activate").hasAuthority("ROLE_ADMIN")
-                .requestMatchers("/api/chains", "/api/chains/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SALES")
-                .requestMatchers("/api/profile").authenticated()
+
+                // 🔒 ADMIN-only operations
+                .requestMatchers("/api/admin/promote/**").hasAuthority("ROLE_ADMIN")
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+
+                // 🔒 SALES-only operations
                 .requestMatchers("/sales/**").hasAuthority("ROLE_SALES")
+
+                // 🔐 Shared Admin + Sales access
+                .requestMatchers("/api/groups", "/api/groups/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SALES")
+                .requestMatchers("/api/chains", "/api/chains/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SALES")
+                .requestMatchers("/api/brands", "/api/brands/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SALES")
+
+                // 🔐 Shared Authenticated access
+                .requestMatchers("/api/groups/all").authenticated()
+                .requestMatchers("/api/groups/*/activate").hasAuthority("ROLE_ADMIN")
+                .requestMatchers("/api/profile").authenticated()
+
+                // 🔐 Default catch-all
                 .anyRequest().authenticated()
             )
             .anonymous(Customizer.withDefaults())
@@ -68,7 +86,6 @@ public class SecurityConfig {
                 .deleteCookies("JSESSIONID")
             );
 
-        // ✅ Register JWT filter BEFORE default username-password filter
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -77,10 +94,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(
-            "http://localhost:5173",
-            "https://entrynest.netlify.app"
-        ));
+        config.setAllowedOrigins(List.of(frontendOrigin));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

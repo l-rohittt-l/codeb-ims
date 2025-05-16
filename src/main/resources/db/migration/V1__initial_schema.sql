@@ -1,0 +1,33 @@
+-- V1__initial_schema.sql
+
+-- Table: customer_groups
+CREATE TABLE IF NOT EXISTS customer_groups (
+  group_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  group_name VARCHAR(255) NOT NULL UNIQUE,
+  is_active BIT(1) NOT NULL DEFAULT b'1',
+  created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+);
+
+-- Table: customer_chains
+CREATE TABLE IF NOT EXISTS customer_chains (
+  chain_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  company_name VARCHAR(255) NOT NULL UNIQUE,
+  gstn VARCHAR(15) NOT NULL UNIQUE,
+  is_active BIT(1) NOT NULL DEFAULT b'1',
+  group_id BIGINT NOT NULL,
+  created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+  CONSTRAINT fk_group FOREIGN KEY (group_id) REFERENCES customer_groups(group_id)
+);
+
+-- Table: users
+CREATE TABLE IF NOT EXISTS users (
+  user_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  full_name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  role VARCHAR(255) NOT NULL,
+  status ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -19,10 +21,11 @@ public class ChainRestController {
     private ChainService chainService;
 
     // ✅ Get all active chains
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<Chain>> getAllChains() {
-        return ResponseEntity.ok(chainService.getAllActiveChains());
+        return ResponseEntity.ok(chainService.getAllChainsSorted());
     }
+
 
     // ✅ Add chain using ChainDto
     @PostMapping
@@ -41,6 +44,19 @@ public class ChainRestController {
         return chain.map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.notFound().build());
     }
+    
+    @GetMapping
+    public ResponseEntity<List<Chain>> getChainsByGroup(
+            @RequestParam(value = "groupId", required = false) Long groupId) {
+        List<Chain> chains;
+        if (groupId != null) {
+            chains = chainService.getChainsByGroupId(groupId);
+        } else {
+            chains = chainService.getAllChainsSorted();
+        }
+        return ResponseEntity.ok(chains);
+    }
+
 
     // ✅ Update chain using ChainDto
     @PutMapping("/{id}")
@@ -69,6 +85,14 @@ public class ChainRestController {
             return ResponseEntity.badRequest().body(result);
         }
         return ResponseEntity.ok("Chain reactivated successfully.");
+    }
+
+    @GetMapping("/total")
+    public ResponseEntity<Map<String, Long>> getTotalActiveChains() {
+        long total = chainService.getTotalActiveChains();
+        Map<String, Long> response = new HashMap<>();
+        response.put("total", total);
+        return ResponseEntity.ok(response);
     }
 
 }

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -43,16 +44,25 @@ public class UserServiceImpl implements UserService {
             return false;
         }
 
+        if ("ADMIN".equalsIgnoreCase(userDto.getRole())) {
+            System.out.println("⚠️ Attempted registration with ADMIN role for email: " + userDto.getEmail());
+        }
+        
         User user = new User();
         user.setFull_name(userDto.getFull_name());
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setRole("ROLE_" + userDto.getRole().toUpperCase());
-        user.setStatus(userDto.getStatus());
+
+        // ❌ Don't trust payload role — force SALES
+        user.setRole("ROLE_SALES");
+
+        // ✅ Allow status (optional field)
+        user.setStatus(userDto.getStatus() != null ? userDto.getStatus() : "active");
 
         userRepository.save(user);
         return true;
     }
+
 
     @Override
     public User login(String email, String rawPassword) {
@@ -150,6 +160,43 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
         return true;
+    }
+
+    @Override
+    public boolean promoteUserToAdmin(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
+            return false;
+        }
+
+        User user = userOptional.get();
+        user.setRole("ROLE_ADMIN");
+        userRepository.save(user);
+        return true;
+    }
+    @Override
+    public List<User> getSalesUsers() {
+        return userRepository.findByRole("ROLE_SALES");
+    }
+    @Override
+    public boolean changeUserRole(Long userId, String newRole) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+
+        if (optionalUser.isEmpty()) return false;
+
+        User user = optionalUser.get();
+
+        if (user.getRole().equals(newRole)) return false;
+
+        user.setRole(newRole);
+        userRepository.save(user);
+        return true;
+    }
+    @Override
+    public List<User> getUsersByRole(String role) {
+        return userRepository.findAll().stream()
+            .filter(user -> role.equals(user.getRole()))
+            .toList();
     }
 
 }
