@@ -19,4 +19,6 @@ public interface InvoiceService {
     InvoiceResponseDTO updateInvoiceEmail(Long invoiceId, String newEmail);
 
     void deleteInvoice(Long invoiceId);
+    List<InvoiceResponseDTO> getInvoicesByEstimateId(Long estimateId);
+
 }

@@ -47,6 +47,8 @@ public class SecurityConfig {
                     "/api/login",
                     "/api/forgot-password",
                     "/api/reset-password/**",
+                    "/api/otp/send",              // ✅ Added
+                    "/api/otp/verify",            // ✅ Added
                     "/api/test-jwt/**",
                     "/api/groups/total",
                     "/api/chains/total"

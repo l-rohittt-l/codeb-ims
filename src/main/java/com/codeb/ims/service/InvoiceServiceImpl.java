@@ -25,8 +25,9 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public InvoicePrefillDTO getPrefillDataFromEstimate(Long estimateId) {
-        Estimate estimate = estimateRepository.findById(estimateId)
-                .orElseThrow(() -> new RuntimeException("Estimate not found"));
+    	Estimate estimate = estimateRepository.findByIdWithChain(estimateId)
+    		    .orElseThrow(() -> new RuntimeException("Estimate not found"));
+
 
         InvoicePrefillDTO dto = new InvoicePrefillDTO();
         dto.setEstimateId(estimate.getEstimatedId());
@@ -41,6 +42,8 @@ public class InvoiceServiceImpl implements InvoiceService {
         dto.setDeliveryDate(estimate.getDeliveryDate() != null ? estimate.getDeliveryDate().toString() : null);
         dto.setDeliveryDetails(estimate.getDeliveryDetails());
         dto.setGstin(estimate.getChain().getGstn()); // assume chain has getGstin()
+
+        System.out.println("Chain = " + estimate.getChain());
 
         return dto;
     }
@@ -130,4 +133,11 @@ public class InvoiceServiceImpl implements InvoiceService {
         dto.setUpdatedAt(invoice.getUpdatedAt());
         return dto;
     }
+    
+    @Override
+    public List<InvoiceResponseDTO> getInvoicesByEstimateId(Long estimateId) {
+        List<Invoice> invoices = invoiceRepository.findByEstimate_EstimatedId(estimateId);
+        return invoices.stream().map(this::mapToDTO).collect(Collectors.toList());
+    }
+
 }

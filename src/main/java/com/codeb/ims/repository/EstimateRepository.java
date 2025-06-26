@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface EstimateRepository extends JpaRepository<Estimate, Long> {
@@ -22,4 +23,8 @@ public interface EstimateRepository extends JpaRepository<Estimate, Long> {
     // ✅ Fetch all estimates ordered by active status
     @Query("SELECT e FROM Estimate e ORDER BY e.isActive DESC, e.createdAt DESC")
     List<Estimate> findAllSortedByActive();
+    
+    @Query("SELECT e FROM Estimate e JOIN FETCH e.chain WHERE e.estimatedId = :id")
+    Optional<Estimate> findByIdWithChain(@Param("id") Long id);
+
 }

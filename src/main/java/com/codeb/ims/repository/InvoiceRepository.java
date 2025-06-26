@@ -14,4 +14,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
     // Optional: Find invoice by invoice number
     Invoice findByInvoiceNumber(String invoiceNumber);
+    
+    
 }

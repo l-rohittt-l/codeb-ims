@@ -46,12 +46,12 @@ public class InvoiceController {
     }
 
     // ✅ Update email only
-    @PutMapping("/{invoiceId}")
+    @PutMapping("/{id}/email")
     public ResponseEntity<InvoiceResponseDTO> updateInvoiceEmail(
-            @PathVariable Long invoiceId,
-            @RequestParam String email
-    ) {
-        return ResponseEntity.ok(invoiceService.updateInvoiceEmail(invoiceId, email));
+            @PathVariable Long id,
+            @RequestParam String email) {
+        InvoiceResponseDTO updated = invoiceService.updateInvoiceEmail(id, email);
+        return ResponseEntity.ok(updated);
     }
 
     // ✅ Delete invoice
@@ -60,4 +60,13 @@ public class InvoiceController {
         invoiceService.deleteInvoice(invoiceId);
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/by-estimate/{estimateId}")
+    public ResponseEntity<List<InvoiceResponseDTO>> getInvoicesByEstimate(@PathVariable Long estimateId) {
+        List<InvoiceResponseDTO> list = invoiceService.getInvoicesByEstimateId(estimateId);
+        return ResponseEntity.ok(list);
+    }
+    
+    
+
+
 }
